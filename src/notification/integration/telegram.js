@@ -1,6 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api')
 const TelegramChatModel = require('./telegram-model')
-const UserService = require('../../user/user-service')
+// const UserService = require('../../user/user-service')
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, {polling: true})
 
@@ -49,8 +49,11 @@ const notify = (chat, message) => {
 const notifyAll = (message) => TelegramChatModel.find().lean()
     .then(chats => chats.map(chat => notify(chat, message)))
 
+
+const send = (vo) => {
+    console.log('enviando telegram')
+}
+
 module.exports = {
-    telegramStartup,
-    notify,
-    notifyAll
+    send
 }

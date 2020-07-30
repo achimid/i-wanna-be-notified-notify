@@ -5,7 +5,7 @@ const onConnection = (client) => {
     client.on('disconnect', () => console.log('Client desconectado...'))
 }
 
-socket.on('connection', onConnection)
+// socket.on('connection', onConnection)
 
 const clientDownload = (url, account) => socket.emit(account || 'client_download', { url })
 
@@ -34,7 +34,11 @@ const notifyWebSocket = async (site) => {
     return clientDownload(url, account)
 }
 
+
+const send = (vo) => {
+    console.log('enviando socket')
+}
+
 module.exports = {
-    socket,
-    notifyWebSocket
+    send
 }

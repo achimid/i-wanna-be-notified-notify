@@ -4,9 +4,9 @@ const service = require('./notification-service')
 module.exports = async () => {
     console.info('Starging execution consumer')
     
-    queue.consumeFromQueue("EXECUTION_COMPLETED", (message, ack) => {
+    queue.consumeFromQueue("EXECUTION_COMPLETED", (message) => {
         const data = JSON.parse(message.content.toString())
-        service.startNotification(data)
+        service.startNotification(data)        
     })
 
 }

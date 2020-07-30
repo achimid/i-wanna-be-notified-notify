@@ -9,10 +9,10 @@ const transporter = nodemailer.createTransport({
 });
 
 
-const getOptions = (emailsDest, message) => ({
+const getOptions = (emails, message) => ({
   from: 'notifyme@gmail.com',
-  to: emailsDest.join(", "),
-  subject: 'Notification - Notify Me',
+  to: emails,
+  subject: 'IWannaBeNotified - Notification',
   text: message
 })
 
@@ -26,11 +26,18 @@ const mailLogger = (error, info) => {
 }
 
 
-const sendEMail = async (emailsDest, message) => {
+const sendMail = async (emailsDest, message) => {
   const mailOptions = getOptions(emailsDest, message)
   transporter.sendMail(mailOptions, mailLogger)
 }
 
+const send = (vo) => {
+  const { monitoring } = vo
+  const { template, email } = monitoring
+  
+  sendMail(email, template)
+}
+
 module.exports = {
-  sendEMail
+  send
 }

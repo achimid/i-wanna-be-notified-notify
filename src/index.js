@@ -15,6 +15,7 @@ app.use(express.json())
 app.disable('x-powered-by')
 app.use('/api/v1', healthcheck)
 
+
 // Initializations
 databaseInit()
 consumerInit()
