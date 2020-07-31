@@ -6,9 +6,9 @@ const express = require('express')
 const databaseInit = require('./config/database')
 const healthcheck = require('./config/healthcheck')
 const consumerInit = require('./notification/execution-consumer')
+const { socketInit } = require('./utils/socket-util') 
 
 const app = express()
-
 
 app.use(cors())
 app.use(express.json())
@@ -21,6 +21,7 @@ databaseInit()
 consumerInit()
 
 
-app.listen(process.env.PORT)
+const server = socketInit(app)
+server.listen(process.env.PORT)
 
 

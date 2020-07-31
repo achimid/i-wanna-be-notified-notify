@@ -33,8 +33,8 @@ const sendMail = async (emailsDest, message) => {
 
 const send = (vo) => {
   const { monitoring } = vo
-  const { template, email } = monitoring
-  
+  const { template, email } = monitoring  
+
   sendMail(email, template)
 }
 

@@ -1,24 +1,27 @@
-const socket = global.socket
-const connectionsId = []
+const http = require('http')
+// const createSocket = require('socket.io')
 
-const CHANELS = {
-    CLIENT_DOWNLOAD: 'CLIENT_DOWNLOAD'
-}
+let socket = null
 
-const socketInit = () => {
+const socketInit = (app) => {
+
+    const server = http.createServer(app)
+    socket = require('socket.io')(server)    
+
     console.info('Iniciando sockets...')
     
     socket.on('connection', (client) => {
-        console.log('Client conectado...', client.id)
-        connectionsId.push(client.id)
+        console.log('Client conectado...', client.id)        
         client.on('disconnect', () => console.log('Client desconectado...'))
     })
+
+    return server
 }
+
+const getSocket = () => { return socket }
 
 
 module.exports = {
-    CHANELS,
-    socket,
-    connectionsId,
+    getSocket,
     socketInit
 }
