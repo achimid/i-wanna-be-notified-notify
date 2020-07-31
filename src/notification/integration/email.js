@@ -1,4 +1,5 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer')
+const { templateFormat } = require('../../utils/template-engine')
 
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
@@ -6,11 +7,11 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_LOGIN,
     pass: process.env.EMAIL_PASSWORD
   }
-});
+})
 
 
 const getOptions = (emails, message) => ({
-  from: 'notifyme@gmail.com',
+  from: 'notification@iwannabenotified.com',
   to: emails,
   subject: 'IWannaBeNotified - Notification',
   text: message
@@ -32,10 +33,12 @@ const sendMail = async (emailsDest, message) => {
 }
 
 const send = (vo) => {
-  const { monitoring } = vo
-  const { template, email } = monitoring  
+  const { execution, monitoring, notification } = vo
+  const { template, email } = notification  
 
-  sendMail(email, template)
+  const message = templateFormat(template, {execution, monitoring})
+
+  sendMail(email, message)
 }
 
 module.exports = {

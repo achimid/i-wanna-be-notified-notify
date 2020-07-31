@@ -1,16 +1,21 @@
-const format = require("string-template")
+const format = require('pupa')
 
-const parseRequestToResultMap = (req) => {
-    const map = { ...req.lastExecution, url: req.url, name: req.name }
-    req.lastExecution.extractedContent.map((item, index) => map[index] = item)
-    return map
+const convertObject = (obj) => {
+    for (var k in obj) {
+        if (Array.isArray(obj[k])) 
+            obj[k] = Object.assign({}, obj[k])
+        else if (typeof obj[k] == "object" && obj[k] !== null)
+            convertObject(obj[k]);
+    }
 }
 
-const templateFormat = (req, templateMessage) => {
-    const resultMap = parseRequestToResultMap(req)
-    return format(templateMessage, resultMap)
+const templateFormat = (templateMessage, map) => {
+    const valueMap = {...map}
+    convertObject(valueMap)
+    return format(templateMessage, valueMap)
 }
 
 module.exports = {
     templateFormat
 }
+

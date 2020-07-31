@@ -6,7 +6,7 @@ const fetch = require('node-fetch');
 const call = (endpoints, execution, vo) => endpoints
     .map(edp => fetchApi(edp, execution)
         .then((data) => log.info(vo, 'Webhook sent with success', data))
-        .catch((err) => log.info(vo, 'Error to send Webhook', err)))
+        .catch((err) => log.info(vo, 'Error to send Webhook')))
 
 const fetchApi = (edp, execution) => {
     // TODO: Melhorar
