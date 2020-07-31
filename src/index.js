@@ -7,6 +7,7 @@ const databaseInit = require('./config/database')
 const healthcheck = require('./config/healthcheck')
 const consumerInit = require('./notification/execution-consumer')
 const { socketInit } = require('./utils/socket-util') 
+const { telegramInit } = require('./notification/integration/telegram')
 
 const app = express()
 
@@ -19,6 +20,7 @@ app.use('/api/v1', healthcheck)
 // Initializations
 databaseInit()
 consumerInit()
+telegramInit()
 
 
 const server = socketInit(app)

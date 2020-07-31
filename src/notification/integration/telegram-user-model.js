@@ -21,5 +21,5 @@ const schema = mongoose.Schema({
     }
 }, { versionKey: false, timestamps: true })
 
-const TelegramChat = mongoose.model("telegram-chat", schema)
+const TelegramChat = mongoose.model("telegram-users", schema)
 module.exports = TelegramChat
