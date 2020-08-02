@@ -1,3 +1,4 @@
+const log = require('../logger/logger')
 const TelegramBot = require('node-telegram-bot-api')
 const TelegramUserModel = require('./telegram-user-model')
 const { templateFormat } = require('../utils/template-engine')
@@ -51,11 +52,26 @@ const notifyAll = (message) => TelegramUserModel.find().lean().then(chats => cha
 
 const send = (vo) => {
     const { execution, monitoring, notification } = vo
+    const { notificationData, saveNotification } = vo
     const { template } = notification  
   
     const message = templateFormat(template, {execution, monitoring})
+    log.info(vo.data, 'Template message formatted', message)
 
-    notifyAll(message)
+    try {
+        notifyAll(message)
+
+        log.info(vo.data, 'Telegram sent with success')
+    } catch (error) {
+        notificationData.errorOnSendTelegram = error
+        notificationData.isSuccess = false
+        log.info(vo.data, 'Error sending telegram', error)
+    }  
+   
+    notificationData.isSuccess = true
+    notificationData.type = 'telegram'
+
+    saveNotification(vo, notificationData)
 }
 
 module.exports = {
