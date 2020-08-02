@@ -1,6 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api')
 const TelegramUserModel = require('./telegram-user-model')
-const { templateFormat } = require('../../utils/template-engine')
+const { templateFormat } = require('../utils/template-engine')
 
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true })
 

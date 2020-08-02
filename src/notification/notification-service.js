@@ -1,11 +1,12 @@
 const log = require('../logger/logger')
-const Execution = require('./execution-model')
-const Monitoring = require('./monitoring-model')
+const Execution = require('../execution/execution-model')
+const Monitoring = require('../monitoring/monitoring-model')
+const Notification = require('./notification-model')
 
-const senderEmail = require('./integration/email')
-const senderTelegram = require('./integration/telegram')
-const senderWebhook = require('./integration/webhook')
-const senderWebsocket = require('./integration/websocket')
+const senderEmail = require('../integration/email')
+const senderTelegram = require('../integration/telegram')
+const senderWebhook = require('../integration/webhook')
+const senderWebsocket = require('../integration/websocket')
 
 const startNotification = async (data) => {
     log.info(data, 'Starging notification')
@@ -13,55 +14,76 @@ const startNotification = async (data) => {
     const execution = await Execution.findById(data.id).lean()
     const monitoring = await Monitoring.findById(data.monitoringId).lean()
 
-    const vo = { execution, monitoring, data }
+
+    const notificationData = { 
+        uuid: data.uuid,
+        executionId: data.id, 
+        monitoringId: data.monitoringId, 
+        startTime: new Date()
+    }
+
+    const vo = { execution, monitoring, data, notificationData, saveNotification }
 
     try {
-        validate(vo)
+        // validate(vo)
         sendNotifications(vo)
+
         log.info(data, 'Notification sent')
     } catch (err) {
         log.info(data, 'Notification not sent', err)
     }
 
-    log.info(data, 'Ending notification')
-    
+}
+
+const saveNotification = (vo, notificationData) => {
+    log.info(vo.data, 'Saving notification')
+
+    const notification = new Notification(notificationData)
+    notification.endTime = new Date()
+    notification.save()
+
+    log.info(vo.data, 'Notification saved')
+
+    return notification.toJSON()
 }
 
 const validate = (vo) => {
+    log.info(vo.data, 'Validating notification')
+
     if (!vo.execution) {
-        log.info(vo.data, 'Execution not found')
-        throw ''
+        throw 'Execution not found'
     }if (!vo.monitoring) {
-        log.info(vo.data, 'Monitoring not found')
-        throw ''
+        throw 'Monitoring not found'
     }
 
 
     if (!vo.execution.isSuccess) {
-        log.info(vo.data, 'Notification not send, execution not success')
-        throw ''
+        throw 'Notification not send, execution not success'
     }
 
     let sendChanged = false
     let sendUnique = false
+    let msg
 
     if (!vo.monitoring.options.notifyChange) {
-        log.info(vo.data, 'Notification not send, notifyChange=false')
+        msg = 'Notification not send, notifyChange=false'
     } else if (!vo.execution.hashTargetChanged) {
-        log.info(vo.data, 'Notification not send, notifyChange=true and hashTargetnot changed')
+        msg = 'Notification not send, notifyChange=true and hashTargetnot changed'
     } else {
         sendChanged = true
     }
     
     if (!vo.monitoring.options.notifyUniqueChange) {
-        log.info(vo.data, 'Notification not send, notifyUniqueChange=false')
+        msg = 'Notification not send, notifyUniqueChange=false'
     } else if (!vo.execution.hashTargetUnique) {
-        log.info(vo.data, 'Notification not send, notifyUniqueChange=true and hashTarget not unique')
+        msg = 'Notification not send, notifyUniqueChange=true and hashTarget not unique'
     } else {
         sendUnique = true
     }
 
-    if (!sendChanged && !sendUnique) throw ''    
+    if (!sendChanged && !sendUnique) {
+        throw msg    
+    }
 }
 
 const sendNotifications = (vo) => {

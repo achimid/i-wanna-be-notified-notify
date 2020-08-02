@@ -1,5 +1,5 @@
 const queue = require("../utils/queue")
-const service = require('./notification-service')
+const service = require('../notification/notification-service')
 
 module.exports = async () => {
     console.info('Starging execution consumer')
