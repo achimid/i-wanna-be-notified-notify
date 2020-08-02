@@ -42,7 +42,7 @@ const saveNotification = (vo, notificationData) => {
     notification.endTime = new Date()
     notification.save()
 
-    log.info(vo.data, 'Notification saved')
+    log.info(vo.data, `Notification [${notification.type}] saved`)
 
     return notification.toJSON()
 }
