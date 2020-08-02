@@ -27,7 +27,7 @@ const startNotification = async (data) => {
     const vo = { execution, monitoring, data, notificationData, saveNotification }
 
     try {
-        // validate(vo)
+        validate(vo)
         sendNotifications(vo)
 
         log.info(data, 'Notification sent')
