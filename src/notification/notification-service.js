@@ -91,7 +91,7 @@ const validate = (vo) => {
         sendUnique = true
     }
 
-    if (!sendChanged && !sendUnique && !sendFilterMatch) {
+    if ((!sendChanged && !sendUnique) || !sendFilterMatch) {
         throw msg    
     }
 }
