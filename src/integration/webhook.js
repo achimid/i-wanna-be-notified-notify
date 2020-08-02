@@ -1,7 +1,7 @@
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 const log = require('../logger/logger')
-const fetch = require('node-fetch');
+const fetch = require('node-fetch')
 
 const call = (vo, endpoints, execution) => endpoints.map(edp => {
     log.info(vo.data, 'Sending webhook request to => ', edp)

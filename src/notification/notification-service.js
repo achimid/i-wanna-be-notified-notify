@@ -22,6 +22,8 @@ const startNotification = async (data) => {
         startTime: new Date()
     }
 
+    data.startTime = new Date()
+
     const vo = { execution, monitoring, data, notificationData, saveNotification }
 
     try {

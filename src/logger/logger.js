@@ -33,4 +33,4 @@ setInterval(() => {
     buffer = []
 
     ExecutionLog.insertMany(insertList).then(() => console.log(`${insertList.length} Logs saved`))
-}, 20000)
+}, 10000)
