@@ -23,7 +23,7 @@ const notifyWebSocket = (vo, monitoring, execution) => {
 }
 
 const send = (vo) => {
-    const { monitoring, execution  } = vo
+    const { monitoring, execution } = vo
     
     log.info(vo.data, 'Posting notification to websocket event')
     notifyWebSocket(vo, monitoring, execution)

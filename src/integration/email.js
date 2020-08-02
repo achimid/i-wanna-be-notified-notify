@@ -42,10 +42,10 @@ const sendMail = async (vo, emailsDest, message) => {
 }
 
 const send = (vo) => {
-  const { execution, monitoring, notification } = vo
+  const { execution, executions, monitoring, notification } = vo
   const { template, email } = notification  
 
-  const message = templateFormat(template, {execution, monitoring})  
+  const message = templateFormat(template, { execution, monitoring, executions })  
   log.info(vo.data, 'Template message formatted', message)
 
   sendMail(vo, email, message)

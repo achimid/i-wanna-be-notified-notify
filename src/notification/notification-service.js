@@ -10,10 +10,13 @@ const senderWebsocket = require('../integration/websocket')
 
 const startNotification = async (data) => {
     log.info(data, 'Starging notification')
+    data.startTime = new Date()
 
+    log.info(data, 'Fetching database informations')
     const execution = await Execution.findById(data.id).lean()
     const monitoring = await Monitoring.findById(data.monitoringId).lean()
-
+    const executions = await Execution.find({ uuid: data.uuid }).sort({ createdAt: 1 }).lean()    
+    log.info(data, 'Database informations fetched')
 
     const notificationData = { 
         uuid: data.uuid,
@@ -22,9 +25,7 @@ const startNotification = async (data) => {
         startTime: new Date()
     }
 
-    data.startTime = new Date()
-
-    const vo = { execution, monitoring, data, notificationData, saveNotification }
+    const vo = { execution, executions, monitoring, data, notificationData, saveNotification }
 
     try {
         validate(vo)
@@ -43,8 +44,8 @@ const saveNotification = (vo, notificationData) => {
     const notification = new Notification(notificationData)
     notification.endTime = new Date()
     notification.save()
-
-    log.info(vo.data, `Notification [${notification.type}] saved`)
+        .then(() => log.info(vo.data, `Notification [${notification.type}] saved`))
+        .catch((err) => log.info(vo.data, `Error saving notification [${notification.type}]`, err))
 
     return notification.toJSON()
 }
@@ -65,7 +66,14 @@ const validate = (vo) => {
 
     let sendChanged = false
     let sendUnique = false
+    let sendFilterMatch = false
     let msg
+
+    if (vo.monitoring.filter && !vo.execution.filterMatch) {
+        msg = 'Notification not send, filterMatch=false'
+    } else {
+        sendFilterMatch = true
+    }
 
     if (!vo.monitoring.options.notifyChange) {
         msg = 'Notification not send, notifyChange=false'
@@ -83,7 +91,7 @@ const validate = (vo) => {
         sendUnique = true
     }
 
-    if (!sendChanged && !sendUnique) {
+    if (!sendChanged && !sendUnique && !sendFilterMatch) {
         throw msg    
     }
 }
@@ -96,7 +104,21 @@ const sendNotifications = (vo) => {
 }
 
 
-const sendNotification = (vo) => (notification) => getSenderStrategy(vo, notification).send({ ...vo, notification })
+const sendNotification = (vo) => (notification) => {
+    if (notification.level && notification.level !== vo.execution.level) {
+        const msg = `Notification ignored because of level selection. level=[${vo.execution.level}]`
+        log.info(vo.data, msg)
+        
+        const { notificationData } = vo  
+        notificationData.errorOnSendLevel = msg
+        notificationData.isSuccess = false        
+        saveNotification(vo, notificationData)
+
+        return vo
+    }
+
+    getSenderStrategy(vo, notification).send({ ...vo, notification })
+}
 
 const getSenderStrategy = (vo, notification) => {
     let sender

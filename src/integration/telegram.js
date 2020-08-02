@@ -51,11 +51,11 @@ const notifyAll = (message) => TelegramUserModel.find().lean().then(chats => cha
 
 
 const send = (vo) => {
-    const { execution, monitoring, notification } = vo
+    const { execution, executions, monitoring, notification } = vo
     const { notificationData, saveNotification } = vo
     const { template } = notification  
   
-    const message = templateFormat(template, {execution, monitoring})
+    const message = templateFormat(template, {execution, monitoring, executions})
     log.info(vo.data, 'Template message formatted', message)
 
     try {

@@ -54,7 +54,7 @@ const fetchApi = (edp, execution) => {
 
 
 const send = (vo) => {
-    const { notification, execution, data } = vo
+    const { notification, execution } = vo
     call(vo, notification.webhook, execution)
 }
 

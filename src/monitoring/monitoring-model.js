@@ -34,6 +34,7 @@ const schema = mongoose.Schema({
         notifyUniqueChange: {type: Boolean},
     },
     notifications: [{
+        level: { type: Number },
 		template: { type: String },
         websocket: { type: Boolean },
 		email: [{ type: String }],
