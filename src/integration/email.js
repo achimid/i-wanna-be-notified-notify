@@ -31,7 +31,6 @@ const mailLogger = (vo) => (error) => {
     log.info(vo.data, 'Email sent with success')
   }
 
-  notificationData.type = 'email'
   saveNotification(vo, notificationData)
 }
 

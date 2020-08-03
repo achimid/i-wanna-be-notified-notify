@@ -1,2 +1,3 @@
 
-Melhorar os logs dos disparos de notificações
+- Corrigir a maneira com que a validação das notificações estão sendo feitas
+- Logar melhor essa parte da validação

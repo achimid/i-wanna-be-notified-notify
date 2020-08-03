@@ -29,7 +29,6 @@ const onError = (vo) => (error) => {
     
     notificationData.errorOnSendWebhook = error
     notificationData.isSuccess = false
-    notificationData.type = 'webhook'
 
     saveNotification(vo, notificationData)
 }

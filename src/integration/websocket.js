@@ -17,8 +17,7 @@ const notifyWebSocket = (vo, monitoring, execution) => {
         notificationData.errorOnSendWebsocket = error
         notificationData.isSuccess = false
     }
-      
-    notificationData.type = 'websocket'
+    
     saveNotification(vo, notificationData)
 }
 

@@ -69,8 +69,6 @@ const send = (vo) => {
     }  
    
     notificationData.isSuccess = true
-    notificationData.type = 'telegram'
-
     saveNotification(vo, notificationData)
 }
 

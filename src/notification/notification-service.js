@@ -33,7 +33,7 @@ const startNotification = async (data) => {
 
         log.info(data, 'Notification sent')
     } catch (err) {
-        log.info(data, 'Notification not sent', err)
+        log.info(data, 'Notification not sent: ', err)
     }
 
 }
@@ -69,8 +69,8 @@ const validate = (vo) => {
     let sendFilterMatch = false
     let msg
 
-    if (vo.monitoring.filter && !vo.execution.filterMatch) {
-        msg = 'Notification not send, filterMatch=false'
+    if (vo.monitoring.filter && vo.monitoring.filter.length > 0  && !vo.execution.filterMatch) {
+        throw 'Notification not send, filterMatch=false'
     } else {
         sendFilterMatch = true
     }
@@ -79,7 +79,7 @@ const validate = (vo) => {
         msg = 'Notification validation ignored, notifyChange=false'
         sendChanged = true
     } else if (!vo.execution.hashTargetChanged) {
-        msg = 'Notification not send, notifyChange=true and hashTargetnot changed'
+        throw 'Notification not send, notifyChange=true and hashTargetnot changed'
     } else {
         sendChanged = true
     }
@@ -88,7 +88,7 @@ const validate = (vo) => {
         msg = 'Notification validation ignored, notifyUniqueChange=false'
         sendUnique = true
     } else if (!vo.execution.hashTargetUnique) {
-        msg = 'Notification not send, notifyUniqueChange=true and hashTarget not unique'
+        throw 'Notification not send, notifyUniqueChange=true and hashTarget not unique'
     } else {
         sendUnique = true
     }
@@ -108,34 +108,41 @@ const sendNotifications = (vo) => {
 
 
 const sendNotification = (vo) => (notification) => {
-    if (notification.level == undefined || notification.level !== vo.execution.level) {
+
+    const sender = getSenderStrategy(vo, notification)
+
+    if (notification.level != undefined && notification.level !== vo.execution.level) {
         const msg = `Notification ignored because of level selection. level=[${vo.execution.level}]`
         log.info(vo.data, msg)
         
         const { notificationData } = vo  
         notificationData.errorOnSendLevel = msg
-        notificationData.isSuccess = false        
+        notificationData.isSuccess = false
         saveNotification(vo, notificationData)
 
         return vo
     }
 
-    getSenderStrategy(vo, notification).send({ ...vo, notification })
+    sender.send({ ...vo, notification })
 }
 
 const getSenderStrategy = (vo, notification) => {
     let sender
     
-    if (notification.email) {
+    if (notification.email && notification.email.length > 0) {
+        vo.notificationData.type = 'email'
         sender = senderEmail
         log.info(vo.data, 'Notification type identified [email]')
-    } else if (notification.telegram) {
+    } else if (notification.telegram && notification.telegram.length > 0) {
+        vo.notificationData.type = 'telegram'
         sender = senderTelegram
         log.info(vo.data, 'Notification type identified [telegram]')
-    } else if (notification.webhook) {
+    } else if (notification.webhook && notification.webhook.length > 0) {
+        vo.notificationData.type = 'webhook'
         sender = senderWebhook
         log.info(vo.data, 'Notification type identified [webhook]')
     } else if (notification.websocket) {
+        vo.notificationData.type = 'websocket'
         sender = senderWebsocket
         log.info(vo.data, 'Notification type identified [websocket]')
     } else {
