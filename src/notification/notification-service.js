@@ -76,7 +76,8 @@ const validate = (vo) => {
     }
 
     if (!vo.monitoring.options.notifyChange) {
-        msg = 'Notification not send, notifyChange=false'
+        msg = 'Notification validation ignored, notifyChange=false'
+        sendChanged = true
     } else if (!vo.execution.hashTargetChanged) {
         msg = 'Notification not send, notifyChange=true and hashTargetnot changed'
     } else {
@@ -84,13 +85,15 @@ const validate = (vo) => {
     }
     
     if (!vo.monitoring.options.notifyUniqueChange) {
-        msg = 'Notification not send, notifyUniqueChange=false'
+        msg = 'Notification validation ignored, notifyUniqueChange=false'
+        sendUnique = true
     } else if (!vo.execution.hashTargetUnique) {
         msg = 'Notification not send, notifyUniqueChange=true and hashTarget not unique'
     } else {
         sendUnique = true
     }
 
+    log.info(vo.data, 'Validation message: ' + msg)
     if ((!sendChanged && !sendUnique) || !sendFilterMatch) {
         throw msg    
     }
@@ -105,7 +108,7 @@ const sendNotifications = (vo) => {
 
 
 const sendNotification = (vo) => (notification) => {
-    if (notification.level && notification.level !== vo.execution.level) {
+    if (notification.level == undefined || notification.level !== vo.execution.level) {
         const msg = `Notification ignored because of level selection. level=[${vo.execution.level}]`
         log.info(vo.data, msg)
         
