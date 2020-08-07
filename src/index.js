@@ -3,7 +3,7 @@ require('dotenv').config()
 const cors = require('cors')
 const express = require('express')
 
-const databaseInit = require('./config/database')
+const { databaseInit } = require('./config/database')
 const healthcheck = require('./config/healthcheck')
 const executionConsumerInit = require('./execution/execution-consumer')
 const { socketInit } = require('./utils/socket-util') 
