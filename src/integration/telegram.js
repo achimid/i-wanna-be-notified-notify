@@ -21,11 +21,17 @@ const telegramInit = () => {
     })
 
     bot.onText(/\/(help|start)/, ({chat}) => {
-        const comands = `
-               /notify_all_start - Receber notificações sobre todos os lançamentos
-            \n /notify_all_stop  - Parar de receber notificações sobre todos os lançamentos
-        `.trim()
-        bot.sendMessage(chat.id, comands)
+        // const comands = `
+        //        /notify_all_start - Receber notificações sobre todos os lançamentos
+        //     \n /notify_all_stop  - Parar de receber notificações sobre todos os lançamentos
+        // `.trim()
+        // bot.sendMessage(chat.id, comands)
+
+        TelegramUserModel.deleteOne({id: msg.chat.id})
+            .then(() => console.log('Telegram-Chat removido com sucesso'))
+            .catch(() => console.log('Erro ao remover Telegram-Chat'))
+
+        bot.sendMessage(chat.id, "🤤 Bem vindo ao Bot de notificações do IWannaBeNotified 🤤")
     })
 
     // bot.onText(/^\/associate/, async (msg) => {
