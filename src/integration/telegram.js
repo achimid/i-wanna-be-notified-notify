@@ -51,7 +51,7 @@ const notify = (chat, message) => {
 }
 
 
-const notifyAll = (message) => TelegramUserModel.find().lean().then(chats => chats.map(chat => notify(chat, message)))
+const notifyAll = (message) => TelegramChat.find().lean().then(chats => chats.map(chat => notify(chat, message)))
 
 
 const send = (vo) => {
