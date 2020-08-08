@@ -27,6 +27,7 @@ const telegramInit = () => {
         setTimeout(() => {
             Monitoring
                 .find({disabled: {$ne: true}})
+                .sort({name: 1})
                 .lean()
                 .then((list) => {
                     bot.sendMessage(chat.id, 
