@@ -22,7 +22,7 @@ const telegramInit = () => {
     })
 
     bot.onText(/\/(help|start)/, ({chat}) => {
-        bot.sendMessage(chat.id, "🤓🤤 Bem vindo ao IWannaBeNotified Bot 🤤🤓")
+        bot.sendMessage(chat.id, "🤓🤤 Bem vindo ao canal de notificações IWannaBeNotified Bot 🤤🤓")
         setTimeout(() => bot.sendMessage(chat.id, "Neste canal você saberá quando o anime foi lançamento na mesma hora"), 1200)
         setTimeout(() => {
             Monitoring
