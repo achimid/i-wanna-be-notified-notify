@@ -30,8 +30,6 @@ const startNotification = async (data) => {
     try {
         validate(vo)
         sendNotifications(vo)
-
-        log.info(data, 'Notification sent')
     } catch (err) {
         log.info(data, 'Notification not sent: ', err)
     }
