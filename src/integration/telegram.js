@@ -32,7 +32,7 @@ const telegramInit = () => {
                     bot.sendMessage(chat.id, 
                         "Veja a lista de sites: \n " + list
                         .map(v => `<a href=\"${v.url}\"><b>-> ${v.name}</b></a>`)
-                        .join('<\\br>')
+                        .join('\n')
                     , {parse_mode: "HTML", disable_web_page_preview: true})
                 })
             
