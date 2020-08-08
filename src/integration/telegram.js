@@ -23,7 +23,7 @@ const telegramInit = () => {
 
     bot.onText(/\/(help|start)/, ({chat}) => {
         bot.sendMessage(chat.id, "🤓🤤 Bem vindo ao canal de notificações IWannaBeNotified Bot 🤤🤓")
-        setTimeout(() => bot.sendMessage(chat.id, "Neste canal você saberá quando o anime foi lançamento na mesma hora"), 1200)
+        setTimeout(() => bot.sendMessage(chat.id, "Neste canal você será o primeiro a saber quando os sites foram atualizados com novos lançamentos"), 2000)
         setTimeout(() => {
             Monitoring
                 .find({disabled: {$ne: true}})
@@ -37,7 +37,7 @@ const telegramInit = () => {
                     , {parse_mode: "HTML", disable_web_page_preview: true})
                 })
             
-        }, 2500)
+        }, 5500)
         
         new TelegramChat(chat).save()
             .then(() => console.log('Telegram-Chat cadastrado com sucesso'))
