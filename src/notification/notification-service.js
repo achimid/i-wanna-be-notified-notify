@@ -77,7 +77,7 @@ const validate = (vo) => {
         msg = 'Notification validation ignored, notifyChange=false'
         sendChanged = true
     } else if (!vo.execution.hashTargetChanged) {
-        throw 'Notification not send, notifyChange=true and hashTargetnot changed'
+        throw 'Notification not send, notifyChange=true and hashTarget not changed'
     } else {
         sendChanged = true
     }
