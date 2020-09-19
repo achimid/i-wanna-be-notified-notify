@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+const config = require('../config/database-config')
+const mongoose = require('../config/mongoose-multi-db')
 
 const schema = mongoose.Schema({
     url: { 
@@ -79,5 +80,4 @@ const schema = mongoose.Schema({
     errorOnExecuteScriptTarget: { type: Object }
 }, { versionKey: false, timestamps: true })
 
-const Execution = mongoose.model("executions", schema)
-module.exports = Execution
+module.exports = mongoose.model('executions', schema, config)

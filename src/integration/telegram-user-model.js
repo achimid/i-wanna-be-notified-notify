@@ -1,4 +1,5 @@
-const mongoose = require("mongoose")
+const config = require('../config/database-config')
+const mongoose = require('../config/mongoose-multi-db')
 
 const schema = mongoose.Schema({
     id: { 
@@ -21,5 +22,4 @@ const schema = mongoose.Schema({
     }
 }, { versionKey: false, timestamps: true })
 
-const TelegramChat = mongoose.model("telegram-users", schema)
-module.exports = TelegramChat
+module.exports = mongoose.model('telegram-users', schema, config)

@@ -13,9 +13,9 @@ const startNotification = async (data) => {
     data.startTime = new Date()
 
     log.info(data, 'Fetching database informations')
-    const execution = await Execution.findById(data.id).lean()
-    const monitoring = await Monitoring.findById(data.monitoringId).lean()
-    const executions = await Execution.find({ uuid: data.uuid }).sort({ createdAt: 1 }).lean()    
+    const execution = await Execution.findByIdLean(data.id)
+    const monitoring = await Monitoring.findByIdLean(data.monitoringId)
+    const executions = await Execution.many(Model => Model.find({ uuid: data.uuid }).sort({ createdAt: 1 }).lean())
     log.info(data, 'Database informations fetched')
 
     const notificationData = { 
@@ -39,7 +39,7 @@ const startNotification = async (data) => {
 const saveNotification = (vo, notificationData) => {
     log.info(vo.data, 'Saving notification')
 
-    const notification = new Notification(notificationData)
+    const notification = Notification.get(notificationData)
     notification.endTime = new Date()
     notification.save()
         .then(() => log.info(vo.data, `Notification [${notification.type}] saved`))

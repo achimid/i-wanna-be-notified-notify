@@ -10,7 +10,7 @@ const telegramInit = () => {
     console.info('Iniciando eventos do telegram...')  
     
     bot.onText(/\/notify_all_start/, (msg) => {
-        new TelegramChat(msg.chat).save()
+        TelegramChat.create(msg.chat)
             .then(() => console.log('Telegram-Chat cadastrado com sucesso'))
             .catch(() => console.info('Telegram-Chat já existe'))
     })
@@ -25,10 +25,10 @@ const telegramInit = () => {
         bot.sendMessage(chat.id, "🤤 Bem vindo ao canal de notificações IWannaBeNotified Bot 🤓")
         setTimeout(() => bot.sendMessage(chat.id, "Neste canal você será o primeiro a saber quando os sites foram atualizados com novos lançamentos"), 2400)
         setTimeout(() => {
-            Monitoring
+            Monitoring.many(Model => Model
                 .find({disabled: {$ne: true}})
                 .sort({name: 1})
-                .lean()
+                .lean())
                 .then((list) => {
                     bot.sendMessage(chat.id, 
                         "Veja a lista de sites: \n" + list
@@ -39,7 +39,7 @@ const telegramInit = () => {
             
         }, 7500)
         
-        new TelegramChat(chat).save()
+        TelegramChat.get(chat).save()
             .then(() => console.log('Telegram-Chat cadastrado com sucesso'))
             .catch(() => console.info('Telegram-Chat já existe'))
 
@@ -51,7 +51,7 @@ const notify = (chat, message) => {
 }
 
 
-const notifyAll = (message) => TelegramChat.find().lean().then(chats => chats.map(chat => notify(chat, message)))
+const notifyAll = (message) => TelegramChat.findAllLean().then(chats => chats.map(chat => notify(chat, message)))
 
 
 const send = (vo) => {
