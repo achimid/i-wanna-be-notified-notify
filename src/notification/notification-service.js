@@ -2,6 +2,7 @@ const log = require('../logger/logger')
 const Execution = require('../execution/execution-model')
 const Monitoring = require('../monitoring/monitoring-model')
 const Notification = require('./notification-model')
+const Log = require('../logger/log-model')
 
 const senderEmail = require('../integration/email')
 const senderTelegram = require('../integration/telegram')
@@ -28,12 +29,22 @@ const startNotification = async (data) => {
     const vo = { execution, executions, monitoring, data, notificationData, saveNotification }
 
     try {
-        validate(vo)
+        // validate(vo)
         sendNotifications(vo)
     } catch (err) {
         log.info(data, 'Notification not sent: ', err)
     }
 
+    if (monitoring.options.temporary) {
+        const uuidMatch = { uuid: data.uuid }
+        setTimeout(() => {
+            log.info(data, 'Removing temporary uuid')
+
+            Execution.deleteMany(uuidMatch)
+            Notification.deleteMany(uuidMatch)
+            Log.deleteMany(uuidMatch).catch(console.error)            
+        }, 60000)        
+    }
 }
 
 const saveNotification = (vo, notificationData) => {
@@ -41,6 +52,7 @@ const saveNotification = (vo, notificationData) => {
 
     const notification = Notification.get(notificationData)
     notification.endTime = new Date()
+
     notification.save()
         .then(() => log.info(vo.data, `Notification [${notification.type}] saved`))
         .catch((err) => log.info(vo.data, `Error saving notification [${notification.type}]`, err))

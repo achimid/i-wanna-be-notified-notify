@@ -33,7 +33,7 @@ const schema = mongoose.Schema({
         scriptTagUrl: { type: String },
         waitTime: { type: Number },
         printscreen: { type: Boolean },
-        printscreenFullPage: { type: Boolean },
+        printscreenFullPage: { type: Boolean }
     },
     filter: {
         threshold: Number,
