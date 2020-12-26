@@ -36,15 +36,20 @@ const startNotification = async (data) => {
     }
 
     if (monitoring.options.temporary) {
-        const uuidMatch = { uuid: data.uuid }
-        setTimeout(() => {
-            log.info(data, 'Removing temporary uuid')
-
-            Execution.deleteMany(uuidMatch)
-            Notification.deleteMany(uuidMatch)
-            Log.deleteMany(uuidMatch).catch(console.error)            
-        }, 60000)        
+        removeByUuid(data)        
+        setTimeout(() => removeByUuid(data), 60000)        
     }
+}
+
+const removeByUuid = (data) => {
+    log.info(data, 'Removing temporary uuid')
+    try {
+        const uuidMatch = { uuid: data.uuid }
+        Execution.deleteMany(uuidMatch)
+        Notification.deleteMany(uuidMatch)  
+        Log.deleteMany(uuidMatch).catch(console.error)
+        Monitoring.deleteOne({ _id: data.monitoringId })
+    } catch (error) {/* */}
 }
 
 const saveNotification = (vo, notificationData) => {
