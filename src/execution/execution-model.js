@@ -66,6 +66,9 @@ const schema = mongoose.Schema({
     isSuccess: {
         type: Boolean
     },
+    isLast: {
+        type: Boolean
+    },  
     executionTime: { 
         type: String
     },
