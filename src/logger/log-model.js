@@ -10,5 +10,4 @@ const schema = mongoose.Schema({
     createdAt: { type: Date, required: true, default: new Date() }
 }, { versionKey: false, timestamps: false })
 
-const Log = createConnectionLog().model("logs", schema)
-module.exports = Log
+module.exports = createConnectionLog().model("logs", schema)

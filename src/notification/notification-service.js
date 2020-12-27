@@ -4,123 +4,73 @@ const Monitoring = require('../monitoring/monitoring-model')
 const Notification = require('./notification-model')
 const Log = require('../logger/log-model')
 
+const { validate } = require('./notification-validator')
+const { cleanTemporaryData } = require('./notification-cleaner')
+
 const senderEmail = require('../integration/email')
 const senderTelegram = require('../integration/telegram')
 const senderWebhook = require('../integration/webhook')
 const senderWebsocket = require('../integration/websocket')
 
+
 const startNotification = async (data) => {
-    log.info(data, 'Starging notification')
+    log.info(data, 'Starting notification')
     data.startTime = new Date()
 
-    log.info(data, 'Fetching database informations')
-    const execution = await Execution.findByIdLean(data.id)
-    const monitoring = await Monitoring.findByIdLean(data.monitoringId)
-    const executions = await Execution.many(Model => Model.find({ uuid: data.uuid }).sort({ createdAt: 1 }).lean())
-    log.info(data, 'Database informations fetched')
+    let vo = { data }
 
+    vo = await Promise.resolve(vo)
+        .then(fetchDatabaseInformations)    
+        .then(createNotificationDataAndFunction)
+        .then(validate)
+        .then(sendNotifications)
+        .catch(err => log.info(data, '** Notification not sent **', err))
+
+    cleanTemporaryData(vo)
+}
+
+const fetchDatabaseInformations = async (vo) => {
+
+    const { id, uuid, monitoringId } = vo.data
+
+    log.info(vo.data, 'Fetching database informations')
+    const execution = await Execution.findByIdLean(id)
+    const monitoring = await Monitoring.findByIdLean(monitoringId)
+    const executions = await Execution.many(Model => Model.find({ uuid }).sort({ createdAt: 1 }).lean())
+    const logs = await Log.find({ uuid }).lean()
+    log.info(vo.data, 'Database informations fetched')
+
+    return {...vo, execution, monitoring, executions, logs}
+}
+
+const createNotificationDataAndFunction = async (vo) => {
     const notificationData = { 
-        uuid: data.uuid,
-        executionId: data.id, 
-        monitoringId: data.monitoringId, 
-        startTime: new Date()
+        uuid: vo.data.uuid,
+        monitoringId: vo.data.monitoringId, 
+        executionId: vo.data.id, 
+        startTime: vo.data.startTime
     }
 
-    const vo = { execution, executions, monitoring, data, notificationData, saveNotification }
+    const saveNotification = (vo, notificationData) => {
+        log.info(vo.data, 'Saving notification')
 
-    try {
-        // validate(vo)
-        sendNotifications(vo)
-    } catch (err) {
-        log.info(data, 'Notification not sent: ', err)
+        const notification = Notification.get(notificationData)
+        notification.endTime = new Date()
+
+        notification.save()
+            .then(() => log.info(vo.data, `Notification [${notification.type}] saved`))
+            .catch((err) => log.info(vo.data, `Error saving notification [${notification.type}]`, err))
+
+        return notification.toJSON()
     }
 
-    if (monitoring.options.temporary) {
-        removeByUuid(data)        
-        setTimeout(() => removeByUuid(data), 60000)        
-    }
-}
-
-const removeByUuid = (data) => {
-    log.info(data, 'Removing temporary uuid')
-    try {
-        const uuidMatch = { uuid: data.uuid }
-        Execution.deleteMany(uuidMatch)
-        Notification.deleteMany(uuidMatch)  
-        Log.deleteMany(uuidMatch).catch(console.error)
-        Monitoring.deleteOne({ _id: data.monitoringId })
-    } catch (error) {/* */}
-}
-
-const saveNotification = (vo, notificationData) => {
-    log.info(vo.data, 'Saving notification')
-
-    const notification = Notification.get(notificationData)
-    notification.endTime = new Date()
-
-    notification.save()
-        .then(() => log.info(vo.data, `Notification [${notification.type}] saved`))
-        .catch((err) => log.info(vo.data, `Error saving notification [${notification.type}]`, err))
-
-    return notification.toJSON()
-}
-
-const validate = (vo) => {
-    log.info(vo.data, 'Validating notification')
-
-    if (!vo.execution) {
-        throw 'Execution not found'
-    }if (!vo.monitoring) {
-        throw 'Monitoring not found'
-    }
-
-
-    if (!vo.execution.isSuccess) {
-        throw 'Notification not send, execution not success'
-    }
-
-    let sendChanged = false
-    let sendUnique = false
-    let sendFilterMatch = false
-    let msg
-
-    if (vo.monitoring.filter && vo.monitoring.filter.length > 0  && !vo.execution.filterMatch) {
-        throw 'Notification not send, filterMatch=false'
-    } else {
-        sendFilterMatch = true
-    }
-
-    if (!vo.monitoring.options.notifyChange) {
-        msg = 'Notification validation ignored, notifyChange=false'
-        sendChanged = true
-    } else if (!vo.execution.hashTargetChanged) {
-        throw 'Notification not send, notifyChange=true and hashTarget not changed'
-    } else {
-        sendChanged = true
-    }
-    
-    if (!vo.monitoring.options.notifyUniqueChange) {
-        msg = 'Notification validation ignored, notifyUniqueChange=false'
-        sendUnique = true
-    } else if (!vo.execution.hashTargetUnique) {
-        throw 'Notification not send, notifyUniqueChange=true and hashTarget not unique'
-    } else {
-        sendUnique = true
-    }
-
-    log.info(vo.data, 'Validation message: ' + msg)
-    if ((!sendChanged && !sendUnique) || !sendFilterMatch) {
-        throw msg    
-    }
+    return { ...vo, notificationData, saveNotification }
 }
 
 const sendNotifications = (vo) => {
-    if (vo.monitoring.notifications.length == 0) {
-        log.info(vo.data, 'Notifications not found')
-    }
-    (vo.monitoring.notifications || []).map(sendNotification(vo))
+    vo.monitoring.notifications.map(sendNotification(vo))
+    return vo
 }
-
 
 const sendNotification = (vo) => (notification) => {
 
