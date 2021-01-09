@@ -2,6 +2,7 @@ const log = require('../logger/logger')
 const Execution = require('../execution/execution-model')
 const Monitoring = require('../monitoring/monitoring-model')
 const Notification = require('./notification-model')
+const Context = require('../context/context-model')
 const Log = require('../logger/log-model')
 
 const defaultTimeoutCleaningSeconds =  parseInt(process.env.DEFAULT_TIMEOUT_DATA_CLEANING_SECONDS) * 1000 * 60
@@ -26,9 +27,10 @@ const removeByUuid = (data) => {
         const { monitoringId } = data
 
         Execution.deleteMany(uuidMatch)
-        Notification.deleteMany(uuidMatch)  
+        Notification.deleteMany(uuidMatch).catch(console.error)
         Log.deleteMany(uuidMatch).catch(console.error)
-
+        Context.deleteMany(uuidMatch).catch(console.error)
+        
         Monitoring.deleteOne({ _id: monitoringId })
 
     } catch (error) {

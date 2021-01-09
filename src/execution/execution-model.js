@@ -7,8 +7,14 @@ const schema = mongoose.Schema({
         required: true
     },
     scriptTarget: { 
-        type: String, 
-        required: true 
+        type: String
+    },
+    scriptNavigate: { 
+        type: String
+    },
+    scriptContent: {
+        type: [{ type: String }],
+        default: undefined    
     },
     uuid: { 
         type: String
@@ -18,6 +24,9 @@ const schema = mongoose.Schema({
     },
     level: { 
         type: Number
+    },
+    mode: {
+        type: String
     },
     startTime: { 
         type: Date
@@ -33,18 +42,21 @@ const schema = mongoose.Schema({
         scriptTagUrl: { type: String },
         waitTime: { type: Number },
         printscreen: { type: Boolean },
-        printscreenFullPage: { type: Boolean }
+        printscreenFullPage: { type: Boolean },
+        levelMax: { type: Number },
+        proxy: { type: String },
+        filterDomain: { type: Boolean }        
     },
     filter: {
         threshold: Number,
-        words: [{
-            type: String
-        }]
+        words: {
+            type: [{ type: String }],
+            default: undefined    
+        }
     },
-    filterMatch: { type: Boolean },
-    scriptContent: [{ 
-        type: String
-    }],
+    filterMatch: { 
+        type: Boolean 
+    },    
     hashTarget: {
         type: String
     },
@@ -57,18 +69,20 @@ const schema = mongoose.Schema({
     extractedTarget: {
         type: String
     },
-    extractedTargetNormalized: {
-        type: String
+    extractedNavigate:{
+        type: [{ type: Object }],
+        default: undefined    
     },
-    extractedContent: [{ 
-        type: Object         
-    }],
+    extractedContent: {
+        type: [{ type: Object }],
+        default: undefined    
+    },
     isSuccess: {
         type: Boolean
     },
     isLast: {
         type: Boolean
-    },  
+    },    
     executionTime: { 
         type: String
     },
@@ -80,7 +94,10 @@ const schema = mongoose.Schema({
     errorOnUploadPrintscreen: { type: Object },
     errorOnRemovePrintscreen: { type: Object },
     errorOnExecuteScriptTarget: { type: Object },
-    errorOnExecuteScriptTarget: { type: Object }
+    errorOnExecuteScriptNavigate: { type: Object },
+    errorOnExecuteScriptTargetRetry: { type: Object },
+    errorOnAddUserAgent: { type: Object },
+    errorOnAccessUrl: { type: Object }
 }, { versionKey: false, timestamps: true })
 
 module.exports = mongoose.model('executions', schema, config)
