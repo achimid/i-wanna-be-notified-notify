@@ -3,9 +3,9 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 const log = require('../logger/logger')
 const fetch = require('node-fetch')
 
-const call = (vo, endpoints, execution) => endpoints.map(edp => {
+const call = (vo, endpoints, data) => endpoints.map(edp => {
     log.info(vo.data, 'Sending webhook request to => ', edp)
-    fetchApi(edp, execution)
+    fetchApi(edp, data)
         .then(onSucess(vo))
         .catch(onError(vo))
 })
@@ -22,8 +22,7 @@ const onSucess = (vo) => () => {
 }
 
 const onError = (vo) => (error) => {
-    // log.info(vo.data, 'Error to send Webhook', error)
-    log.info(vo.data, 'Error to send Webhook')
+    log.info(vo.data, 'Error to send Webhook', error)
 
     const { notificationData, saveNotification } = vo
     
@@ -33,12 +32,12 @@ const onError = (vo) => (error) => {
     saveNotification(vo, notificationData)
 }
 
-const fetchApi = (edp, execution) => {
+const fetchApi = (edp, data) => {
     // TODO: Melhorar
     if (edp.method.toUpperCase() != 'GET' && edp.method.toUpperCase() != 'HEAD') {
         return fetch(edp.url, {
             method: edp.method.toUpperCase(),
-            body: JSON.stringify(execution),
+            body: JSON.stringify(data),
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -46,15 +45,15 @@ const fetchApi = (edp, execution) => {
         })
     } else {
         var url = new URL(edp.url)
-        Object.keys(execution).forEach(key => url.searchParams.append(key, execution[key]))
+        Object.keys(data).forEach(key => url.searchParams.append(key, data[key]))
         return fetch(url)
     }
 }
 
 
 const send = (vo) => {
-    const { notification, execution } = vo
-    call(vo, notification.webhook, execution)
+    const { notification, execution, logs, monitoring, executions } = vo
+    call(vo, notification.webhook, { execution, monitoring, logs, executions })
 }
 
 

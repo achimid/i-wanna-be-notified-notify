@@ -51,7 +51,14 @@ const notify = (chat, message) => {
 }
 
 
-const notifyAll = (message) => TelegramChat.findAllLean().then(chats => chats.map(chat => notify(chat, message)))
+const notifyAll = async (message) => {
+    let list = await TelegramChat.findAllLean()
+    
+    const ids = [... new Set(list.map(item => item._id.toString()))]
+    list = ids.map(id => list.find(s => s._id.toString() === id))
+
+    list.map(chat => notify(chat, message))
+}
 
 
 const send = (vo) => {
