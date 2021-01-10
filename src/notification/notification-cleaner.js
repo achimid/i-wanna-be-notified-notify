@@ -9,7 +9,7 @@ const timeoutPoll = {}
 
 const cleanTemporaryData = (vo) => {
     const { monitoring, data } = vo
-    const { monitoringId } = data
+    const monitoringId = monitoring._id
 
     if (monitoring.options.temporary && vo.execution.isLast) {
         log.info(data, 'Cleaning data from temporary execution')

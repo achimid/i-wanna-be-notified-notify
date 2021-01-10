@@ -9,12 +9,16 @@ const schema = mongoose.Schema({
     name: { 
         type: String
     },
-    scriptTarget: {
+    scriptTarget: { 
         type: String
     },
-    scriptContent: [{
+    scriptNavigate: { 
         type: String
-    }],
+    },
+    scriptContent: {
+        type: [{ type: String }],
+        default: undefined    
+    },
     filter: {
         threshold: { Number },
         words: {
@@ -24,6 +28,12 @@ const schema = mongoose.Schema({
     },
     regularity: { 
         type: String 
+    },
+    mode: {
+        type: String
+    },
+    disabled: {
+        type: Boolean
     },
     options: {
         timeout: { type: Number },
@@ -36,7 +46,10 @@ const schema = mongoose.Schema({
         printscreenFullPage: { type: Boolean },
         notifyChange: {type: Boolean},
         notifyUniqueChange: {type: Boolean},
-        temporary: {type: Boolean}
+        levelMax: { type: Number },
+        proxy: { type: String },
+        temporary: { type: Boolean },
+        filterDomain: { type: Boolean }
     },
     notifications: [{
         _id: false,
