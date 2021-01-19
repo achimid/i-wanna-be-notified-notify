@@ -12,7 +12,6 @@ const senderTelegram = require('../integration/telegram')
 const senderWebhook = require('../integration/webhook')
 const senderWebsocket = require('../integration/websocket')
 
-
 const startNotification = async (data) => {
     log.info(data, 'Starting notification')
     data.startTime = new Date()
@@ -33,12 +32,26 @@ const fetchDatabaseInformations = async (vo) => {
 
     const { id, uuid, monitoringId } = vo.data
 
+    
+
     log.info(vo.data, 'Fetching database informations')
     const execution = await Execution.findByIdLean(id)
     const monitoring = await Monitoring.findByIdLean(monitoringId)
-    const executions = await Execution.many(Model => Model.find({ uuid }).sort({ level: 1 }).lean())
     const logs = await Log.find({ uuid }).lean()
+    let executions = await Execution.many(Model => Model.find({ uuid }).sort({ level: 1 }).lean())
     log.info(vo.data, 'Database informations fetched')
+
+    if (execution.isLast) {
+        let counter = 0
+        while (executions.length != (execution.level + 1) && counter < 5) {
+            log.info(vo.data, 'Waiting for the executions')
+
+            await sleep(500)    
+            executions = await Execution.many(Model => Model.find({ uuid }).sort({ level: 1 }).lean())
+            counter++
+        }        
+    }    
+    
 
     return {...vo, execution, monitoring, executions, logs}
 }
@@ -118,6 +131,12 @@ const getSenderStrategy = (vo, notification) => {
 
     return sender
 }
+
+const sleep = (ms) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms)
+    })
+} 
 
 module.exports = {
     startNotification
