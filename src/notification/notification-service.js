@@ -36,7 +36,7 @@ const fetchDatabaseInformations = async (vo) => {
     log.info(vo.data, 'Fetching database informations')
     const execution = await Execution.findByIdLean(id)
     const monitoring = await Monitoring.findByIdLean(monitoringId)
-    const executions = await Execution.many(Model => Model.find({ uuid }).sort({ createdAt: 1 }).lean())
+    const executions = await Execution.many(Model => Model.find({ uuid }).sort({ level: 1 }).lean())
     const logs = await Log.find({ uuid }).lean()
     log.info(vo.data, 'Database informations fetched')
 
