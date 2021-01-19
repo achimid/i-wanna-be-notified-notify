@@ -15,7 +15,7 @@ const cleanTemporaryData = (vo) => {
         log.info(data, 'Cleaning data from temporary execution')
 
         if (timeoutPoll[monitoringId]) clearTimeout(timeoutPoll[monitoringId])
-        // timeoutPoll[monitoringId] = setTimeout(() => removeByUuid(data), defaultTimeoutCleaningSeconds)
+        timeoutPoll[monitoringId] = setTimeout(() => removeByUuid(data), defaultTimeoutCleaningSeconds)
     }
 }
 
