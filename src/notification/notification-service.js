@@ -24,6 +24,7 @@ const startNotification = async (data) => {
         .then(validate)
         .then(sendNotifications)
         .catch(err => log.info(data, '** Notification not sent **', err))
+        .finally(data => data)
 
     cleanTemporaryData(vo)
 }
@@ -38,7 +39,10 @@ const fetchDatabaseInformations = async (vo) => {
     const execution = await Execution.findByIdLean(id)
     const monitoring = await Monitoring.findByIdLean(monitoringId)
     const logs = await Log.find({ uuid }).lean()
-    let executions = await Execution.many(Model => Model.find({ uuid }).sort({ level: 1 }).lean())
+    let executions = await Execution.many(Model => Model
+        .find({ uuid })
+        .sort({ level: 1 })
+        .lean())
     log.info(vo.data, 'Database informations fetched')
 
     if (execution.isLast) {
