@@ -8,10 +8,13 @@ const defaultTimeoutCleaningSeconds =  parseInt(process.env.DEFAULT_TIMEOUT_DATA
 const timeoutPoll = {}
 
 const cleanTemporaryData = (vo) => {
-    const { monitoring, data } = vo
-    const monitoringId = monitoring._id
 
-    if (monitoring.options.temporary && vo.execution.isLast) {
+    if (!vo || !vo.monitoring) return;
+    
+    const { monitoring, data } = vo
+    const monitoringId = monitoring._id.toString()
+
+    if (monitoring.options.temporary && vo.execution && vo.execution.isLast) {
         log.info(data, 'Cleaning data from temporary execution')
 
         if (timeoutPoll[monitoringId]) clearTimeout(timeoutPoll[monitoringId])
