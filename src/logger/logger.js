@@ -1,13 +1,11 @@
-const queue = require('../utils/queue')
-const ExecutionLog = require('./log-model')
-
-let buffer = []
+const producer = require('./log-producer')
 
 module.exports = {
     info: (vo, log, extra) => {
         const uuid = vo.uuid ? vo.uuid : vo
         const level = `[${vo.level || 0}]`
         let executionTime
+        
         try {
             executionTime = (new Date().getTime() - vo.startTime.getTime()) + 'ms'
             if (extra) {
@@ -21,17 +19,12 @@ module.exports = {
             } else {
                 console.log(uuid, level, log)
             }
+        }        
+        
+        try {
+            producer.send({ startTime: vo.startTime, log, extra, executionTime, level, uuid })    
+        } catch (error) {
+            console.error('Error on send log to producer', error)
         }
-        // buffer.push({uuid, executionTime, log, extra})
-        ExecutionLog.create({uuid, executionTime, log, extra})
     }
 }
-
-// setInterval(() => {
-//     if (buffer.length == 0) return
-
-//     const insertList = [...buffer]
-//     buffer = []
-
-//     ExecutionLog.insertMany(insertList).then(() => console.log(`${insertList.length} Logs saved`))
-// }, 10000)

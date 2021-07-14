@@ -5,8 +5,7 @@ module.exports = async () => {
     console.info('Starging execution consumer')
     
     queue.consumeFromQueue("EXECUTION_COMPLETED", (message) => {
-        const data = JSON.parse(message.content.toString())
-        service.startNotification(data)        
+        service.startNotification(JSON.parse(message.content.toString()))
     })
 
 }
