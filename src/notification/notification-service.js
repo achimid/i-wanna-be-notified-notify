@@ -1,8 +1,9 @@
-const log = require('../logger/logger')
+const log = require('../utils/logger')
+
 const Execution = require('../execution/execution-model')
 const Monitoring = require('../monitoring/monitoring-model')
 const Notification = require('./notification-model')
-const Log = require('../logger/log-model')
+const Log = require('../log/log-client')
 
 const { validate } = require('./notification-validator')
 const { cleanTemporaryData } = require('./notification-cleaner')
@@ -38,7 +39,8 @@ const fetchDatabaseInformations = async (vo) => {
     log.info(vo.data, 'Fetching database informations')
     const execution = await Execution.findByIdLean(id)
     const monitoring = await Monitoring.findByIdLean(monitoringId)
-    const logs = await Log.find({ uuid }).lean()
+    const logs = await Log.findByFilter({ uuid })
+    
     let executions = await Execution.many(Model => Model
         .find({ uuid })
         .sort({ level: 1 })

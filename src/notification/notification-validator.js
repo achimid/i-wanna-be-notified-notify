@@ -1,4 +1,4 @@
-const log = require('../logger/logger')
+const log = require('../utils/logger')
 
 const validate = (vo) => {
     log.info(vo.data, 'Validating notification')

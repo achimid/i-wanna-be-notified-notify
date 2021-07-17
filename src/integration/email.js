@@ -1,4 +1,4 @@
-const log = require('../logger/logger')
+const log = require('../utils/logger')
 const nodemailer = require('nodemailer')
 const { templateFormat } = require('../utils/template-engine')
 

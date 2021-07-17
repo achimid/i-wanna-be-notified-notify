@@ -1,4 +1,4 @@
-const log = require('../logger/logger')
+const log = require('../utils/logger')
 const TelegramBot = require('node-telegram-bot-api')
 const TelegramChat = require('./telegram-user-model')
 const Monitoring = require('../monitoring/monitoring-model')

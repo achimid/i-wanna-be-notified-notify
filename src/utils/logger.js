@@ -1,4 +1,5 @@
-const producer = require('./log-producer')
+const queue = require("./queue")
+
 
 module.exports = {
     info: (vo, log, extra) => {
@@ -12,17 +13,17 @@ module.exports = {
                 console.log(uuid, level, executionTime, log, extra)    
             } else {
                 console.log(uuid, level, executionTime, log)
-            }
+            }            
         } catch (error) {
             if (extra) {
                 console.log(uuid, level, log, extra)    
             } else {
                 console.log(uuid, level, log)
             }
-        }        
-        
+        }
+
         try {
-            producer.send({ startTime: vo.startTime, log, extra, executionTime, level, uuid })    
+            queue.sendToQueue("LOG", { startTime: vo.startTime, log, extra, executionTime, level, uuid })    
         } catch (error) {
             console.error('Error on send log to producer', error)
         }

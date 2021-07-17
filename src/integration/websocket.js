@@ -1,4 +1,4 @@
-const log = require('../logger/logger')
+const log = require('../utils/logger')
 const { getSocket } = require('../utils/socket-util')
 
 const notifyWebSocket = (vo, monitoring, execution) => {

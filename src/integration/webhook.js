@@ -1,6 +1,6 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
-const log = require('../logger/logger')
+const log = require('../utils/logger')
 const fetch = require('node-fetch')
 
 const call = (vo, endpoints, data) => endpoints.map(edp => {
