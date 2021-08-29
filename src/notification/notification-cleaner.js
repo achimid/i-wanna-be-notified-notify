@@ -39,6 +39,30 @@ const removeByUuid = (data) => {
     }
 }
 
+const fetchAllTemporaryData = () => {
+
+    const todayMinusDaysTemporaryData =  new Date()
+    todayMinusDaysTemporaryData.setDate(todayMinusDaysTemporaryData.getDate() - 1) // 1 dias para dados temporários
+
+    // const todayMinusDays =  new Date()
+    // todayMinusDays.setDate(todayMinusDays.getDate() - 5) // 5 dias para dados normais
+
+    const query = { $or: [
+            { options: { temporary: true }, updatedAt: { $lte: todayMinusDaysTemporaryData }},
+            // { updatedAt: { $lte: todayMinusDays }}
+        ]}
+    
+
+    Execution.find(query).then(exeuctionsTmps => exeuctionsTmps.map(removeByUuid))
+}
+
+const jobToRemoveTemporaryData = () => {
+    fetchAllTemporaryData()
+    setInterval(fetchAllTemporaryData, 3 * 100 * 60 ) // 3 minutos 
+}
+
+jobToRemoveTemporaryData()
+
 module.exports = {
     cleanTemporaryData
 }
