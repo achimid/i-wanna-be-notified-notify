@@ -80,6 +80,7 @@ const send = (vo) => {
     }  
    
     notificationData.isSuccess = true
+    notificationData.content = { message }
     saveNotification(vo, notificationData)
 }
 

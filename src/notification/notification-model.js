@@ -12,6 +12,9 @@ const schema = mongoose.Schema({
         type: String, 
         required: true 
     },
+    content: {
+        type: Object
+    },
     type: { 
         type: String
     },

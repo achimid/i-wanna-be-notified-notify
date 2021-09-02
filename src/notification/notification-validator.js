@@ -13,9 +13,9 @@ const validate = (vo) => {
         throw 'Notifications not found'
     }
 
-    // if (!vo.execution.isSuccess) {
-    //     throw 'Notification not send, execution not success'
-    // }
+    if (!vo.execution.isSuccess) {
+        throw 'Notification not send, execution not success'
+    }
 
     let sendChanged = false
     let sendUnique = false
