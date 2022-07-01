@@ -61,7 +61,7 @@ const jobToRemoveTemporaryData = () => {
     setInterval(fetchAllTemporaryData, 3 * 100 * 60 ) // 3 minutos 
 }
 
-jobToRemoveTemporaryData()
+// jobToRemoveTemporaryData()
 
 module.exports = {
     cleanTemporaryData
